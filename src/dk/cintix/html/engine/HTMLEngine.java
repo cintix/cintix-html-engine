@@ -154,10 +154,9 @@ public class HTMLEngine {
             while (read != -1) {
                 read = fileinput.read(buffer);
                 if (read != -1) {
-                    filedata = new String(buffer, 0, read);
+                    filedata += new String(buffer, 0, read);
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
