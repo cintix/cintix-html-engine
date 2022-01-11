@@ -56,6 +56,7 @@ public class HTMLEngineTest {
                     + "</html>";
 
             String result = HTMLEngine.process(file, variables);
+            System.out.println(result);
             if (expResult.equalsIgnoreCase(result)) {
                 System.out.println("\tHTMLEngine.process:: Test pass");
             } else {
