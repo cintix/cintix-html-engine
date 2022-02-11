@@ -55,14 +55,13 @@ public class HTMLEngine {
         while (offset != -1) {
             lastOffset = offset;
             offset = code.indexOf(prefix, offset);
-
             if (offset == -1 && lastOffset > 0) {
                 if (lastOffset < code.length()) {
                     parseHTML += code.substring(lastOffset);
                 }
             }
 
-            if (offset > 0) {
+            if (offset >= 0) {
                 if (lastOffset != offset) {
                     parseHTML += code.substring(lastOffset, offset);
                 }
@@ -109,8 +108,12 @@ public class HTMLEngine {
         int keyOffset = code.indexOf(":");
         HTMLTag htmlTag = null;
 
-        String clsKey = code.substring(1, code.indexOf(" ", keyOffset));
+        int classEndIndex = code.indexOf(" ", keyOffset);
+        if (classEndIndex == -1) {
+            classEndIndex = code.indexOf(">", keyOffset);
+        }
 
+        String clsKey = code.substring(1, classEndIndex);
         try {
             String propertiesString = code.substring(1 + clsKey.length(), code.length() - 1).trim();
             if (propertiesString.endsWith("/")) {
@@ -119,6 +122,9 @@ public class HTMLEngine {
             Map<String, String> properties = new TreeMap<>();
             String[] propertyKeys = propertiesString.split(" ");
             for (String property : propertyKeys) {
+                if (!property.contains("=")) {
+                    continue;
+                }
                 String[] keyValue = property.split("=");
                 String key = keyValue[0].trim();
                 String value = keyValue[1].trim();
