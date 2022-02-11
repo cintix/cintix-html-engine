@@ -121,8 +121,6 @@ public class HTMLEngine {
                 propertiesString = propertiesString.substring(0, propertiesString.length() - 1);
             }
 
-            System.out.println("propertiesString : " + propertiesString);
-
             Map<String, String> properties = new TreeMap<>();
             List<String> propertyKeys = readParamters(propertiesString);
             for (String property : propertyKeys) {
