@@ -4,6 +4,8 @@ import dk.cintix.html.engine.tags.base.HTMLTag;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -107,7 +109,6 @@ public class HTMLEngine {
     private static HTMLTag proccessTag(String code, Map<String, String> predefinedValues) {
         int keyOffset = code.indexOf(":");
         HTMLTag htmlTag = null;
-
         int classEndIndex = code.indexOf(" ", keyOffset);
         if (classEndIndex == -1) {
             classEndIndex = code.indexOf(">", keyOffset);
@@ -119,8 +120,11 @@ public class HTMLEngine {
             if (propertiesString.endsWith("/")) {
                 propertiesString = propertiesString.substring(0, propertiesString.length() - 1);
             }
+
+            System.out.println("propertiesString : " + propertiesString);
+
             Map<String, String> properties = new TreeMap<>();
-            String[] propertyKeys = propertiesString.split(" ");
+            List<String> propertyKeys = readParamters(propertiesString);
             for (String property : propertyKeys) {
                 if (!property.contains("=")) {
                     continue;
@@ -150,6 +154,32 @@ public class HTMLEngine {
             e.printStackTrace();
         }
         return htmlTag;
+    }
+
+    private static List<String> readParamters(String line) {
+        List<String> parameters = new ArrayList<>();
+        int offset = 0;
+
+        while (offset != -1) {
+            offset = line.indexOf("=", offset);
+            if (offset == -1) break;
+            
+            int start = line.indexOf(" ");
+            if (start == -1 || start > offset) {
+                start = 0;
+            }
+
+            int firstMark = line.indexOf("\"", offset);
+            int lastMark = line.indexOf("\"", firstMark + 1);
+
+            if (firstMark == -1 || lastMark == -1) break;
+            lastMark++;
+
+            parameters.add(line.substring(start, lastMark));
+            offset = lastMark;
+        }
+
+        return parameters;
     }
 
     private static String readFile(File file) {
