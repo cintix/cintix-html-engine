@@ -32,24 +32,23 @@ public class HTMLEngine {
         }
     }
 
-    public static String process(File file, Map<String, String> properties) throws IOException {
+    public static String process(File file, Map<String, String> properties, Map<String, Object> resources) throws IOException {
         String filedata = readFile(file);
-        String parseHTML = processHTML(filedata, properties);
+        String parseHTML = processHTML(filedata, properties, resources);
         return parseHTML.trim();
     }
 
     public static String process(File file) throws IOException {
-        return process(file, new TreeMap<>());
+        return process(file, new TreeMap<>(), new TreeMap<>());
     }
 
     private static String processHTML(String code) throws IOException {
-        return processHTML(code, new TreeMap<>());
+        return processHTML(code, new TreeMap<>(), new TreeMap<>());
     }
 
-    private static String processHTML(String code, Map<String, String> properties) throws IOException {
+    private static String processHTML(String code, Map<String, String> properties, Map<String, Object> resources) throws IOException {
         int offset = 0;
         int lastOffset = 0;
-
         String prefix = "<" + namespace + ":";
         String prefixEnd = "</" + namespace + ":";
         String parseHTML = "";
@@ -69,10 +68,11 @@ public class HTMLEngine {
                 }
                 int tagEndIndex = code.indexOf(">", offset);
                 String tagData = code.substring(offset, tagEndIndex + 1);
-
                 if (tagData.contains("/")) {
+                    System.out.println("SINGLE LINE!");
                     HTMLTag proccessTag = proccessTag(tagData, properties);
                     if (proccessTag != null) {
+                        proccessTag.addResource(resources);
                         parseHTML += proccessTag.startTag() + proccessTag.endTag();
                     }
                     offset = tagEndIndex + 1;
@@ -81,12 +81,14 @@ public class HTMLEngine {
                     if (endingTagOffset != -1) {
                         int endTagEndIndex = code.indexOf(">", endingTagOffset);
                         String innerHTML = code.substring(tagEndIndex + 1, endingTagOffset);
+                    System.out.println("SINGLE LINE!");
 
                         HTMLTag proccessTag = proccessTag(tagData, properties);
                         if (proccessTag != null) {
+                            proccessTag.addResource(resources);
                             parseHTML += proccessTag.startTag();
                         }
-                        parseHTML += processHTML(innerHTML, properties);
+                        parseHTML += processHTML(innerHTML, properties, resources);
                         if (proccessTag != null) {
                             parseHTML += proccessTag.endTag();
                         }
@@ -160,8 +162,10 @@ public class HTMLEngine {
 
         while (offset != -1) {
             offset = line.indexOf("=", offset);
-            if (offset == -1) break;
-            
+            if (offset == -1) {
+                break;
+            }
+
             int start = line.indexOf(" ");
             if (start == -1 || start > offset) {
                 start = 0;
@@ -170,7 +174,9 @@ public class HTMLEngine {
             int firstMark = line.indexOf("\"", offset);
             int lastMark = line.indexOf("\"", firstMark + 1);
 
-            if (firstMark == -1 || lastMark == -1) break;
+            if (firstMark == -1 || lastMark == -1) {
+                break;
+            }
             lastMark++;
 
             parameters.add(line.substring(start, lastMark));

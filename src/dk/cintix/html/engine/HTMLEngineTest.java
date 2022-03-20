@@ -55,7 +55,7 @@ public class HTMLEngineTest {
                     + "    </body>\n"
                     + "</html>";
 
-            String result = HTMLEngine.process(file, variables);
+            String result = HTMLEngine.process(file, variables,  new TreeMap<>());
             if (expResult.equalsIgnoreCase(result)) {
                 System.out.println("\tHTMLEngine.process:: Test pass");
             } else {
