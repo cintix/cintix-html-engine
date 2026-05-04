@@ -11,10 +11,15 @@ public class Value extends HTMLTag {
     @Override
     public String startTag() {
         String propertyName = getProperty("name");
-        if (propertyName.startsWith("@")) {
-            return getProperty(propertyName);
+        if (propertyName == null) {
+            return "";
         }
-        return getProperty("name");
+
+        if (propertyName.startsWith("@")) {
+            String value = getProperty(propertyName);
+            return value == null ? "" : value;
+        }
+        return propertyName;
     }
 
     @Override
