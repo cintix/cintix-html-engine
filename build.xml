@@ -10,6 +10,12 @@
 <project name="cintix-html-engine" default="jar" basedir=".">
     <description>Builds, tests, and runs the project cintix-html-engine.</description>
     <import file="nbproject/build-impl.xml"/>
+
+    <target name="-pre-compile">
+        <!-- Use release 8 for portable bytecode compatible with Java 8 through 25 -->
+        <property name="javac.compilerargs" value="--release 8"/>
+    </target>
+
     <!--
 
     There exist several targets which are by default empty and which can be 
